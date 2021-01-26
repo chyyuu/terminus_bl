@@ -84,12 +84,10 @@ fn main(_hartid: usize, dtb_pa: usize) -> ! {
     //let payload_start = unsafe { &payload_bin } as *const _ as usize;
     rustsbi_info();
     platform_info(0x80020000);
-    loop {
 
+    unsafe {
+        mepc::write(0x80020000);
+        mstatus::set_mpp(MPP::Supervisor);
+        rustsbi::enter_privileged(mhartid::read(), dtb_pa)
     }
-    // unsafe {
-    //     mepc::write(payload_start);
-    //     mstatus::set_mpp(MPP::Supervisor);
-    //     rustsbi::enter_privileged(mhartid::read(), dtb_pa)
-    // }
 }
