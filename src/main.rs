@@ -18,7 +18,7 @@ use trap::init_trap;
 
 global_asm!(include_str!("crt.S"));
 //generate in build.rs
-global_asm!(include_str!(concat!(env!("OUT_DIR"), "/payload.S")));
+//global_asm!(include_str!(concat!(env!("OUT_DIR"), "/payload.S")));
 
 fn init() {
     init_heap();
@@ -78,15 +78,18 @@ fn main(_hartid: usize, dtb_pa: usize) -> ! {
         mstatus::{self, MPP},
     };
     init();
-    extern "C" {
-        static payload_bin: usize;
-    }
-    let payload_start = unsafe { &payload_bin } as *const _ as usize;
+    // extern "C" {
+    //     static payload_bin: usize;
+    // }
+    //let payload_start = unsafe { &payload_bin } as *const _ as usize;
     rustsbi_info();
-    platform_info(payload_start);
-    unsafe {
-        mepc::write(payload_start);
-        mstatus::set_mpp(MPP::Supervisor);
-        rustsbi::enter_privileged(mhartid::read(), dtb_pa)
+    platform_info(0x80020000);
+    loop {
+
     }
+    // unsafe {
+    //     mepc::write(payload_start);
+    //     mstatus::set_mpp(MPP::Supervisor);
+    //     rustsbi::enter_privileged(mhartid::read(), dtb_pa)
+    // }
 }
